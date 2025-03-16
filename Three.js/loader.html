@@ -7,13 +7,23 @@
   <style>
     body { margin: 0; }
     canvas { display: block; }
+    #exportBtn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
+    <button id="exportBtn">Export GLTF</button>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/RGBELoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/exporters/GLTFExporter.js"></script>
     <script>
 
         // Scene setup
@@ -94,6 +104,26 @@
         }
 
         window.addEventListener( 'resize', onWindowResize );
+
+        // Export GLTF function
+        function exportGLTF() {
+            const exporter = new THREE.GLTFExporter();
+
+            exporter.parse(scene, function (result) {
+                const output = JSON.stringify(result, null, 2);
+                const blob = new Blob([output], {type: 'application/json'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'model.gltf'; // Set the filename for the export
+                a.click();
+                URL.revokeObjectURL(url);
+            }, {binary: false});
+        }
+
+        // Event listener for export button
+        document.getElementById('exportBtn').addEventListener('click', exportGLTF);
+
     </script>
 </body>
 </html>
